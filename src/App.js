@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import './App.css';
+import Search from './components/Search';
+import Results from './components/Results';
 
-function App() {
+export default function App() {
 
   const [inputValue, setInputValue] = useState('');
   const [pokemon, setPokemon] = useState({
+    number: '',
     name: '',
     image: 'https://lh3.googleusercontent.com/6f7EGWNzYPSDLIDpFmeJ9suDi0Zh2hsNaAuus28SBajO2tAx65thjuM0ZSVN-DySffZc_eTlJXSK_O8Gcnj6nQ',
     type1: '',
     type2: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const Pokedex = require("pokeapi-js-wrapper");
   const P = new Pokedex.Pokedex();
@@ -29,21 +33,28 @@ function App() {
       return "INVALID";
   }
 
+  function clearResults(){
+    setPokemon({...pokemon,
+      number: '',
+      name: '',
+      image: '/sadPikachu.png',
+      type1: '',
+      type2: '',
+    });
+  }
+
 
   const searchPokemon = async (e) => {
 
     e.preventDefault();
     setError('');
     const validResult = validateInput(inputValue);
+    setLoading(true);
     
     if(validResult === "INVALID"){
+      setLoading(false);
       setError("Invalid input. Please try again.")
-      setPokemon({...pokemon,
-        name: '',
-        image: '',
-        type1: '',
-        type2: '',
-      });
+      clearResults();
     }
     else{
 
@@ -59,6 +70,7 @@ function App() {
       try {
 
         const result = await P.getPokemonByName(query);
+        setLoading(false);
         console.log(result.types);
 
         let secondType = '';
@@ -67,9 +79,20 @@ function App() {
           secondType = result.types[1].type.name;
         }
 
+        let sprite = '';
+        console.log(result.sprites.front_default);
+
+        if(result.sprites.front_default == null){
+            sprite = '/notAvailable.png';
+        }
+        else{
+          sprite = result.sprites.front_default;
+        }
+
         setPokemon({...pokemon,
+          number: result.id.toString(),
           name: result.name,
-          image: result.sprites.front_default,
+          image: sprite,
           type1: result.types[0].type.name,
           type2: secondType,
         });
@@ -77,8 +100,9 @@ function App() {
       } catch (err) {
 
         console.log(err);
+        setLoading(false);
         setError("Pokemon could not be found. Please try another input.")
-
+        clearResults();
       }
     }
   };
@@ -88,23 +112,21 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col items-center bg-neutral-200">
-      <form onSubmit={searchPokemon} className="flex flex-col items-center">
-            <input 
-              className="block w-64 mt-32 mb-8"
-              type="text"
-              value={inputValue}
-              onChange={handleChange}
-            />
-        <button type="submit" className="px-5 py-2 bg-cyan-200 rounded-lg">Search</button>
-        <p>{error}</p>
-        <div>{pokemon.name}</div>
-        <img src={pokemon.image} alt="pokemon sprite" className="w-48 h-48"/>
-        <div>{pokemon.type1}</div>
-        <div>{pokemon.type2}</div>
-      </form>
+    <div className="flex flex-col items-center bg-neutral-100">
+      <Search 
+        onSearch={searchPokemon}
+        onChange={handleChange}
+        inputValue={inputValue}
+      />
+      {loading 
+        ? 
+          <p>Loading...</p>
+        :
+          <Results
+            error={error} 
+            pokemon={pokemon}
+          />
+      }
     </div>
   );
 }
-
-export default App;

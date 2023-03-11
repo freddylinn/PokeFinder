@@ -125,6 +125,12 @@ export default function App() {
       >
       Search a Pokemon by Name or ID!
       </h1>
+      <h3
+        className="font-medium text-lg md:text-xl text-center
+          px-6 pt-2"
+      >
+        Current Pokemon: 1 to 1010
+      </h3> {/* MAKE THIS DYNAMIC */}
       <Search 
         onSearch={searchPokemon}
         onChange={handleChange}

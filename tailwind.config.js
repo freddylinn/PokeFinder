@@ -7,7 +7,11 @@ module.exports = {
     extend: {
       fontFamily: {
         'vcr': ['VCR','sans-serif']
-      }
+      },
+      colors: {
+        'ground': '#d0b115',
+        'rock': '#a8924a',
+      },
     },
   },
   plugins: [

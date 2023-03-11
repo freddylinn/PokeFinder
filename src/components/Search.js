@@ -8,7 +8,7 @@ export default function Search(props){
                 value={props.inputValue}
                 onChange={props.onChange}
                 className="
-                    block w-11/12 md:w-96 mt-32 mb-8
+                    block w-11/12 md:w-96 mt-20 mb-8
                     rounded-md
                     border-gray-300
                     shadow-sm

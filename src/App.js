@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import './App.css';
 import Search from './components/Search';
 import Results from './components/Results';
@@ -19,19 +19,29 @@ export default function App() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [maxPokemonID, setMaxPokemonID] = useState(0);
+
+  useEffect(() => { // Check max pokemon id on initial render
+    fetchMaxPokemonID();
+  }, [] )
+
+  async function fetchMaxPokemonID() {
+    const result = await P.getPokemonSpeciesList();
+    setMaxPokemonID(result.count);
+  }
 
   function validateInput(input){
-      if(isNaN(input)){ // if the string is NOT a valid number 
-        if(input.length < 25 && input.length >= 1){
-          return "validName";
-        }
+    if(isNaN(input)){ // if the string is NOT a valid number 
+      if(input.length < 25 && input.length >= 1){
+        return "validName";
       }
-      else{
-        if(input % 1 == 0 && input >= 1 && input.length <= 4){
-          return "validNumber";
-        }
+    }
+    else{
+      if(input % 1 == 0 && input >= 1 && input.length <= 4){
+        return "validNumber";
       }
-      return "INVALID";
+    }
+    return "INVALID";
   }
 
 
@@ -118,35 +128,35 @@ export default function App() {
   
 
   return (
-    <div className="flex flex-col items-center bg-neutral-100">
-      <h1
-        className="font-semibold text-2xl md:text-3xl text-center
-          px-6 pt-16"
-      >
-      Search a Pokemon by Name or ID!
-      </h1>
-      <h3
-        className="font-medium text-lg md:text-xl text-center
-          px-6 pt-2"
-      >
-        Current Pokemon: 1 to 1010
-      </h3> {/* MAKE THIS DYNAMIC */}
-      <Search 
-        onSearch={searchPokemon}
-        onChange={handleChange}
-        inputValue={inputValue}
-      />
-      {loading 
-        ? 
-          <Loading
-
-          />
-        :
-          <Results
-            error={error} 
-            pokemon={pokemon}
-          />
-      }
+    <div className="h-screen bg-neutral-100">
+      <div className="flex flex-col items-center bg-neutral-100">
+        <h1
+          className="font-semibold text-2xl md:text-3xl text-center
+            px-6 pt-16"
+        >
+        Search a Pokemon by Name or ID!
+        </h1>
+        <h3
+          className="font-medium text-lg md:text-xl text-center
+            px-6 pt-2"
+        >
+          {maxPokemonID !== 0 ? `Current Pokemon: 1 to ${maxPokemonID}` : <></>}
+        </h3>
+        <Search 
+          onSearch={searchPokemon}
+          onChange={handleChange}
+          inputValue={inputValue}
+        />
+        {loading 
+          ? 
+            <Loading/>
+          :
+            <Results
+              error={error} 
+              pokemon={pokemon}
+            />
+        }
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import './App.css';
 import Search from './components/Search';
 import Results from './components/Results';
 import Loading from './components/Loading';
+import NavBar from './components/NavBar';
 
 export default function App() {
 
@@ -128,8 +129,10 @@ export default function App() {
   
 
   return (
-    <div className="h-screen bg-neutral-100">
-      <div className="flex flex-col items-center bg-neutral-100">
+    <>
+    <NavBar></NavBar>
+    <div className="h-screen bg-gradient-to-r from-neutral-100 to-neutral-200">
+      <div className="flex flex-col items-center">
         <h1
           className="font-semibold text-2xl md:text-3xl text-center
             px-6 pt-16"
@@ -158,5 +161,6 @@ export default function App() {
         }
       </div>
     </div>
+    </>
   );
 }
